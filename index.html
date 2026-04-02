@@ -28,44 +28,40 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Noto Sans', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
+/* HEADER */
 header {
   height: 64px; background: var(--guinda-dark);
   display: flex; align-items: center; padding: 0 20px; gap: 14px;
   flex-shrink: 0; border-bottom: 3px solid var(--dorado); z-index: 1000;
 }
-.header-logo {
-  height: 42px; width: 42px; background: var(--blanco); border-radius: 4px;
-  display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
-}
+.header-logo { height: 42px; width: 42px; background: var(--blanco); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
 .header-text h1 { font-size: 13px; font-weight: 700; color: var(--blanco); text-transform: uppercase; letter-spacing: .5px; }
 .header-text p  { font-size: 11px; color: var(--dorado-light); font-weight: 300; }
 .counter-badge  { margin-left: auto; background: var(--guinda); border: 1px solid var(--dorado); color: var(--blanco); padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
 
+/* LAYOUT */
 .app-body { display: flex; flex: 1; overflow: hidden; }
 
-aside {
-  width: 320px; background: var(--blanco); display: flex; flex-direction: column;
-  flex-shrink: 0; border-right: 1px solid #ddd; overflow: hidden; z-index: 500;
-}
+/* SIDEBAR */
+aside { width: 320px; background: var(--blanco); display: flex; flex-direction: column; flex-shrink: 0; border-right: 1px solid #ddd; overflow: hidden; z-index: 500; }
 .sidebar-header { background: var(--verde-dark); padding: 12px 16px; color: var(--blanco); }
 .sidebar-header h2 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--dorado-light); margin-bottom: 2px; }
 .sidebar-header p  { font-size: 11px; color: rgba(255,255,255,.55); }
 
 .filters { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #eee; }
 .filter-group label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--gris); margin-bottom: 4px; }
-.filter-group select, .filter-group input {
-  width: 100%; padding: 7px 10px; border: 1px solid #ddd; border-radius: 6px;
-  font-family: 'Noto Sans', sans-serif; font-size: 12px; color: var(--negro);
-  background: var(--gris-light); cursor: pointer;
-}
+.filter-group select, .filter-group input { width: 100%; padding: 7px 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Noto Sans', sans-serif; font-size: 12px; color: var(--negro); background: var(--gris-light); cursor: pointer; }
 .filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--guinda); background: var(--blanco); }
 .btn-clear { width: 100%; padding: 8px; background: transparent; border: 1px solid var(--guinda); color: var(--guinda); border-radius: 6px; font-family: 'Noto Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; }
 .btn-clear:hover { background: var(--guinda); color: var(--blanco); }
 
+/* LAYER TOGGLES */
 .layer-toggles { padding: 10px 16px; border-bottom: 1px solid #eee; display: flex; flex-direction: column; gap: 6px; }
 .layer-toggle { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--negro); cursor: pointer; }
 .layer-toggle input { accent-color: var(--guinda); cursor: pointer; }
+.layer-hint { font-size: 10px; color: var(--gris); font-style: italic; padding: 0 16px 8px; }
 
+/* RESULTS */
 .results-header { padding: 8px 16px; background: var(--gris-light); border-bottom: 1px solid #eee; font-size: 10px; color: var(--gris); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
 .results-list { flex: 1; overflow-y: auto; }
 .result-item { padding: 11px 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background .15s; }
@@ -78,12 +74,13 @@ aside {
 .tag-n2 { background: #fff3e0; color: #e65100; }
 .tag-n3 { background: #fce4ec; color: #880e4f; }
 .tag-mun { background: #e3f2fd; color: #1565c0; }
-
 .results-list::-webkit-scrollbar { width: 4px; }
 .results-list::-webkit-scrollbar-thumb { background: var(--guinda); border-radius: 4px; }
 
+/* MAP */
 #map { flex: 1; }
 
+/* POPUP */
 .popup-card { min-width: 240px; }
 .popup-head { background: var(--guinda-dark); color: var(--blanco); padding: 10px 12px; margin: -10px -12px 10px -12px; border-radius: 4px 4px 0 0; }
 .popup-head h3 { font-size: 12px; font-weight: 700; line-height: 1.3; }
@@ -94,25 +91,34 @@ aside {
 .popup-row span { color: #555; }
 .popup-tag { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; }
 
-.legend { position: absolute; bottom: 28px; right: 12px; background: var(--blanco); border-radius: 8px; padding: 12px 14px; box-shadow: 0 2px 12px rgba(0,0,0,.15); z-index: 999; border-top: 3px solid var(--guinda); }
+/* LEYENDA */
+.legend { position: absolute; bottom: 28px; right: 12px; background: var(--blanco); border-radius: 8px; padding: 12px 14px; box-shadow: 0 2px 12px rgba(0,0,0,.15); z-index: 999; border-top: 3px solid var(--guinda); max-height: 380px; overflow-y: auto; min-width: 170px; }
 .legend h4 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--gris); margin-bottom: 8px; }
 .leg-item { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; font-size: 11px; color: var(--negro); }
-.leg-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.leg-dot  { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
 .leg-rect { width: 18px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.legend::-webkit-scrollbar { width: 3px; }
+.legend::-webkit-scrollbar-thumb { background: var(--guinda); border-radius: 4px; }
 
-/* Tooltip de zona */
+/* TOOLTIP ZONA */
 .leaflet-tooltip-zona {
-  background: rgba(97,18,50,0.85);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 10px;
+  background: rgba(255,255,255,0.93);
+  color: #222;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  font-size: 9px;
   font-family: 'Noto Sans', sans-serif;
-  font-weight: 600;
-  padding: 3px 7px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  font-weight: 700;
+  padding: 2px 5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  white-space: nowrap;
+  pointer-events: none;
 }
 .leaflet-tooltip-zona::before { display: none; }
+
+/* POPUP ZONA */
+.popup-zona { font-family: 'Noto Sans', sans-serif; font-size: 12px; min-width: 180px; }
+.popup-zona-head { background: var(--verde-dark); color: var(--blanco); padding: 8px 10px; margin: -10px -12px 10px -12px; border-radius: 4px 4px 0 0; font-weight: 700; font-size: 11px; }
 </style>
 </head>
 <body>
@@ -159,9 +165,16 @@ aside {
     </div>
 
     <div class="layer-toggles">
-      <label class="layer-toggle"><input type="checkbox" id="togZonas" checked> Zonas de trabajo</label>
-      <label class="layer-toggle"><input type="checkbox" id="togEtiquetas" checked> Etiquetas de zonas</label>
+      <label class="layer-toggle">
+        <input type="checkbox" id="togZonas" checked>
+        Zonas de trabajo
+      </label>
+      <label class="layer-toggle">
+        <input type="checkbox" id="togEtiquetas" checked>
+        Etiquetas de zonas
+      </label>
     </div>
+    <p class="layer-hint">💡 Selecciona una alcaldía para ver sus zonas con colores únicos</p>
 
     <div class="results-header" id="resHeader">499 resultados</div>
     <div class="results-list" id="resList"></div>
@@ -170,103 +183,146 @@ aside {
   <div id="map"></div>
 </div>
 
-<div class="legend">
+<!-- LEYENDA -->
+<div class="legend" id="leyenda">
   <h4>Nivel de atención</h4>
   <div class="leg-item"><div class="leg-dot" style="background:#2e7d32"></div>Primer Nivel</div>
   <div class="leg-item"><div class="leg-dot" style="background:#e65100"></div>Segundo Nivel</div>
   <div class="leg-item"><div class="leg-dot" style="background:#880e4f"></div>Tercer Nivel</div>
-  <hr style="border:none;border-top:1px solid #eee;margin:8px 0">
-  <div class="leg-item"><div class="leg-rect" style="background:rgba(155,34,71,0.15);border:1px solid #9b2247"></div>Zonas de trabajo</div>
+  <div id="leyendaZonas"></div>
 </div>
 
 <script>
-const COLORES = { 'PRIMER NIVEL':'#2e7d32', 'SEGUNDO NIVEL':'#e65100', 'TERCER NIVEL':'#880e4f' };
+// ── PALETA DE COLORES para zonas individuales ─────────────────────────────
+const PALETA = [
+  '#e53935','#8e24aa','#1e88e5','#00897b','#43a047',
+  '#fb8c00','#6d4c41','#039be5','#c0ca33','#e91e63',
+  '#5e35b1','#00acc1','#7cb342','#f4511e','#3949ab',
+  '#00897b','#fdd835','#d81b60','#1e88e5','#8e24aa',
+  '#00acc1','#43a047','#fb8c00','#e53935','#5e35b1',
+  '#039be5','#c0ca33','#6d4c41','#3949ab','#7cb342',
+];
 
-// ── MAPA ──────────────────────────────────────────────────────────────────
+function colorZona(index) {
+  return PALETA[index % PALETA.length];
+}
+
+// ── MAPA BASE ─────────────────────────────────────────────────────────────
 const map = L.map('map', { center:[19.42,-99.13], zoom:11 });
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution:'© OpenStreetMap contributors', maxZoom:19
 }).addTo(map);
 
-// ── CAPA ZONAS GEOJSON ────────────────────────────────────────────────────
-let zonasLayer = null;
+// ── DATOS GEOJSON (cargado una vez, renderizado bajo demanda) ─────────────
+let geojsonData = null;
+let zonasLayer  = null;
 let etiquetasLayer = L.layerGroup().addTo(map);
-let mostrarEtiquetas = true;
-
-function getZonaColor(zona) {
-  // Colores por alcaldía basados en el nombre de zona
-  const nombre = (zona || '').toUpperCase();
-  if (nombre.includes('ALVARO') || nombre.includes('OBREGON'))   return '#1565c0';
-  if (nombre.includes('AZCAPOTZALCO'))                           return '#6a1b9a';
-  if (nombre.includes('BENITO'))                                 return '#ad1457';
-  if (nombre.includes('COYOACAN'))                               return '#00838f';
-  if (nombre.includes('CUAJIMALPA'))                             return '#2e7d32';
-  if (nombre.includes('CUAUHTEMOC'))                             return '#e65100';
-  if (nombre.includes('GUSTAVO'))                                return '#4527a0';
-  if (nombre.includes('IZTACALCO'))                              return '#558b2f';
-  if (nombre.includes('IZTAPALAPA'))                             return '#ef6c00';
-  if (nombre.includes('MAGDALENA'))                              return '#00695c';
-  if (nombre.includes('MIGUEL'))                                 return '#1976d2';
-  if (nombre.includes('MILPA'))                                  return '#5d4037';
-  if (nombre.includes('TLAHUAC'))                                return '#0277bd';
-  if (nombre.includes('TLALPAN'))                                return '#283593';
-  if (nombre.includes('VENUSTIANO'))                             return '#c62828';
-  if (nombre.includes('XOCHIMILCO'))                             return '#37474f';
-  return '#9b2247';
-}
 
 fetch('zonas.geojson')
   .then(r => r.json())
   .then(data => {
-    zonasLayer = L.geoJSON(data, {
-      style: feat => {
-        const nombre = feat.properties['nombre de zona trabajo'] || '';
-        return {
-          fillColor: getZonaColor(nombre),
-          fillOpacity: 0.12,
-          color: getZonaColor(nombre),
-          weight: 1.2,
-          opacity: 0.6
-        };
-      },
-      onEachFeature: (feat, layer) => {
-        const zona  = feat.properties['nombre de zona trabajo'] || '';
-        const secc  = feat.properties['seccion'] || '';
-        layer.bindPopup(`<b>Zona:</b> ${zona}<br><b>Sección:</b> ${secc}`, { maxWidth:200 });
-        layer.on('mouseover', () => layer.setStyle({ fillOpacity:0.3, weight:2 }));
-        layer.on('mouseout',  () => zonasLayer.resetStyle(layer));
-      }
-    }).addTo(map);
-
-    // Etiquetas de zona
-    data.features.forEach(feat => {
-      try {
-        const coords = feat.geometry.type === 'MultiPolygon'
-          ? feat.geometry.coordinates[0][0]
-          : feat.geometry.coordinates[0];
-        const lats = coords.map(c=>c[1]), lons = coords.map(c=>c[0]);
-        const lat = lats.reduce((a,b)=>a+b)/lats.length;
-        const lon = lons.reduce((a,b)=>a+b)/lons.length;
-        const nombre = feat.properties['nombre de zona trabajo'] || '';
-        const short = nombre.split('-').slice(-1)[0] || nombre;
-        L.tooltip({ permanent:true, direction:'center', className:'leaflet-tooltip-zona' })
-          .setContent(short)
-          .setLatLng([lat, lon])
-          .addTo(etiquetasLayer);
-      } catch(e) {}
-    });
+    geojsonData = data;
+    console.log('GeoJSON cargado:', data.features.length, 'zonas');
   })
-  .catch(e => console.warn('No se pudo cargar zonas.geojson:', e));
+  .catch(e => console.warn('Error cargando zonas.geojson:', e));
 
+function renderizarZonas(alcaldiaFiltro) {
+  // Limpiar capas anteriores
+  if (zonasLayer) { map.removeLayer(zonasLayer); zonasLayer = null; }
+  etiquetasLayer.clearLayers();
+  document.getElementById('leyendaZonas').innerHTML = '';
+
+  if (!geojsonData || !alcaldiaFiltro) return;
+
+  // Filtrar features de la alcaldía seleccionada
+  const features = geojsonData.features.filter(f => {
+    const alc = f.properties['alcaldia'] || '';
+    return alc === alcaldiaFiltro;
+  });
+
+  if (!features.length) return;
+
+  // Ordenar por nombre para asignar colores consistentes
+  const nombresUnicos = [...new Set(features.map(f => f.properties['nombre de zona trabajo'] || ''))].sort();
+  const colorMap = {};
+  nombresUnicos.forEach((n, i) => { colorMap[n] = colorZona(i); });
+
+  // Crear capa GeoJSON
+  zonasLayer = L.geoJSON({ type:'FeatureCollection', features }, {
+    style: feat => {
+      const nombre = feat.properties['nombre de zona trabajo'] || '';
+      const color  = colorMap[nombre] || '#9b2247';
+      return { fillColor:color, fillOpacity:0.25, color:color, weight:1.5, opacity:0.85 };
+    },
+    onEachFeature: (feat, layer) => {
+      const nombre = feat.properties['nombre de zona trabajo'] || '';
+      const color  = colorMap[nombre] || '#9b2247';
+      layer.bindPopup(`
+        <div class="popup-zona">
+          <div class="popup-zona-head">🗺️ Zona de trabajo</div>
+          <b>${nombre}</b>
+        </div>`, { maxWidth:220 });
+      layer.on('mouseover', () => layer.setStyle({ fillOpacity:0.5, weight:2.5 }));
+      layer.on('mouseout',  () => zonasLayer && zonasLayer.resetStyle(layer));
+    }
+  });
+
+  if (document.getElementById('togZonas').checked) {
+    zonasLayer.addTo(map);
+  }
+
+  // Etiquetas — solo si hay zoom suficiente
+  if (document.getElementById('togEtiquetas').checked && map.getZoom() >= 13) {
+    agregarEtiquetas(features, colorMap);
+  }
+
+  // Leyenda dinámica de zonas
+  const leyendaZonas = document.getElementById('leyendaZonas');
+  leyendaZonas.innerHTML = `<hr style="border:none;border-top:1px solid #eee;margin:8px 0"><h4>Zonas (${nombresUnicos.length})</h4>`;
+  nombresUnicos.forEach(nombre => {
+    const short = nombre.split('-').slice(2).join('-') || nombre;
+    const div = document.createElement('div');
+    div.className = 'leg-item';
+    div.innerHTML = `<div class="leg-rect" style="background:${colorMap[nombre]}"></div><span style="font-size:9px">${short}</span>`;
+    leyendaZonas.appendChild(div);
+  });
+}
+
+function agregarEtiquetas(features, colorMap) {
+  etiquetasLayer.clearLayers();
+  const procesados = new Set();
+  features.forEach(feat => {
+    const nombre = feat.properties['nombre de zona trabajo'] || '';
+    if (procesados.has(nombre)) return;
+    procesados.add(nombre);
+    try {
+      const coords = feat.geometry.type === 'MultiPolygon'
+        ? feat.geometry.coordinates[0][0]
+        : feat.geometry.coordinates[0];
+      const lats = coords.map(c=>c[1]);
+      const lons = coords.map(c=>c[0]);
+      const lat = lats.reduce((a,b)=>a+b)/lats.length;
+      const lon = lons.reduce((a,b)=>a+b)/lons.length;
+      const short = nombre.split('-').slice(2).join('-') || nombre;
+      const color = colorMap[nombre] || '#333';
+      L.tooltip({ permanent:true, direction:'center', className:'leaflet-tooltip-zona' })
+        .setContent(`<span style="color:${color}">${short}</span>`)
+        .setLatLng([lat, lon])
+        .addTo(etiquetasLayer);
+    } catch(e) {}
+  });
+}
+
+// ── TOGGLES ───────────────────────────────────────────────────────────────
 document.getElementById('togZonas').addEventListener('change', e => {
-  if (e.target.checked) { if(zonasLayer) zonasLayer.addTo(map); }
-  else { if(zonasLayer) map.removeLayer(zonasLayer); }
+  if (zonasLayer) {
+    e.target.checked ? zonasLayer.addTo(map) : map.removeLayer(zonasLayer);
+  }
 });
 document.getElementById('togEtiquetas').addEventListener('change', e => {
   e.target.checked ? etiquetasLayer.addTo(map) : map.removeLayer(etiquetasLayer);
 });
 
-// Ocultar etiquetas en zoom bajo
 map.on('zoomend', () => {
   const z = map.getZoom();
   const tog = document.getElementById('togEtiquetas');
@@ -274,9 +330,11 @@ map.on('zoomend', () => {
   else if (tog.checked) { etiquetasLayer.addTo(map); }
 });
 
-// ── ICONOS ────────────────────────────────────────────────────────────────
+// ── COLORES NIVEL ─────────────────────────────────────────────────────────
+const COLORES_NIVEL = { 'PRIMER NIVEL':'#2e7d32', 'SEGUNDO NIVEL':'#e65100', 'TERCER NIVEL':'#880e4f' };
+
 function icono(nivel) {
-  const c = COLORES[nivel] || '#555';
+  const c = COLORES_NIVEL[nivel] || '#555';
   return L.divIcon({
     html:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="28" viewBox="0 0 22 28">
       <ellipse cx="11" cy="26" rx="5" ry="2" fill="rgba(0,0,0,.2)"/>
@@ -310,7 +368,7 @@ function tagNivel(n) {
 UNIDADES.forEach((u, i) => {
   const m = L.marker([u.lat, u.lon], { icon: icono(u.nivel) });
   const bgTag = u.nivel==='PRIMER NIVEL'?'#e8f5e9':u.nivel==='SEGUNDO NIVEL'?'#fff3e0':'#fce4ec';
-  const cTag  = COLORES[u.nivel]||'#333';
+  const cTag  = COLORES_NIVEL[u.nivel]||'#333';
   m.bindPopup(`
     <div class="popup-card">
       <div class="popup-head"><h3>${u.nombre}</h3><small>${u.clues}</small></div>
@@ -330,6 +388,26 @@ const selMun  = document.getElementById('filtroMunicipio');
 const selNiv  = document.getElementById('filtroNivel');
 const selInst = document.getElementById('filtroInstitucion');
 const inBus   = document.getElementById('busqueda');
+
+// Mapeo nombre CSV → clave GeoJSON
+const ALCALDIA_MAP = {
+  'ALVARO OBREGON':         'ALVARO_OBREGON',
+  'AZCAPOTZALCO':           'AZCAPOTZALCO',
+  'BENITO JUAREZ':          'BENITO_JUAREZ',
+  'COYOACAN':               'COYOACAN',
+  'CUAJIMALPA DE MORELOS':  'CUAJIMALPA_DE_MORELOS',
+  'CUAUHTEMOC':             'CUAUHTEMOC',
+  'GUSTAVO A. MADERO':      'GUSTAVO_A_MADERO',
+  'IZTACALCO':              'IZTACALCO',
+  'IZTAPALAPA':             'IZTAPALAPA',
+  'LA MAGDALENA CONTRERAS': 'LA_MAGDALENA_CONTRERAS',
+  'MIGUEL HIDALGO':         'MIGUEL_HIDALGO',
+  'MILPA ALTA':             'MILPA_ALTA',
+  'TLAHUAC':                'TLAHUAC',
+  'TLALPAN':                'TLALPAN',
+  'VENUSTIANO CARRANZA':    'VENUSTIANO_CARRANZA',
+  'XOCHIMILCO':             'XOCHIMILCO',
+};
 
 [...new Set(UNIDADES.map(u=>u.municipio))].sort().forEach(v => {
   const o=document.createElement('option'); o.value=v; o.textContent=v; selMun.appendChild(o);
@@ -368,9 +446,17 @@ function aplicar() {
 
   document.getElementById('counter').textContent = `${n} unidades`;
   document.getElementById('resHeader').textContent = `${n} resultados`;
+
+  // Renderizar zonas solo si hay alcaldía seleccionada
+  const claveGeo = mun ? (ALCALDIA_MAP[mun] || null) : null;
+  renderizarZonas(claveGeo);
 }
 
-function limpiarFiltros() { selMun.value=''; selNiv.value=''; selInst.value=''; inBus.value=''; aplicar(); }
+function limpiarFiltros() {
+  selMun.value=''; selNiv.value=''; selInst.value=''; inBus.value='';
+  aplicar();
+}
+
 [selMun, selNiv, selInst].forEach(el => el.addEventListener('change', aplicar));
 inBus.addEventListener('input', aplicar);
 aplicar();
