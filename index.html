@@ -222,7 +222,6 @@ function renderizarZonas(alcaldiaFiltro) {
   // Limpiar capas anteriores
   if (zonasLayer) { map.removeLayer(zonasLayer); zonasLayer = null; }
   etiquetasLayer.clearLayers();
-  document.getElementById('leyendaZonas').innerHTML = '';
 
   if (!ZONAS_DATA || !alcaldiaFiltro) return;
 
