@@ -189,7 +189,6 @@ aside { width: 320px; background: var(--blanco); display: flex; flex-direction: 
   <div class="leg-item"><div class="leg-dot" style="background:#2e7d32"></div>Primer Nivel</div>
   <div class="leg-item"><div class="leg-dot" style="background:#e65100"></div>Segundo Nivel</div>
   <div class="leg-item"><div class="leg-dot" style="background:#880e4f"></div>Tercer Nivel</div>
-  <div id="leyendaZonas"></div>
 </div>
 
 <script>
@@ -272,20 +271,9 @@ function renderizarZonas(alcaldiaFiltro) {
   }
 
   // Etiquetas — solo si hay zoom suficiente
-  if (document.getElementById('togEtiquetas').checked && map.getZoom() >= 13) {
+  if (document.getElementById('togEtiquetas').checked && map.getZoom() >= 11) {
     agregarEtiquetas(features, colorMap);
   }
-
-  // Leyenda dinámica de zonas
-  const leyendaZonas = document.getElementById('leyendaZonas');
-  leyendaZonas.innerHTML = `<hr style="border:none;border-top:1px solid #eee;margin:8px 0"><h4>Zonas (${nombresUnicos.length})</h4>`;
-  nombresUnicos.forEach(nombre => {
-    const short = nombre.split('-').slice(2).join('-') || nombre;
-    const div = document.createElement('div');
-    div.className = 'leg-item';
-    div.innerHTML = `<div class="leg-rect" style="background:${colorMap[nombre]}"></div><span style="font-size:9px">${short}</span>`;
-    leyendaZonas.appendChild(div);
-  });
 }
 
 function agregarEtiquetas(features, colorMap) {
@@ -326,7 +314,7 @@ document.getElementById('togEtiquetas').addEventListener('change', e => {
 map.on('zoomend', () => {
   const z = map.getZoom();
   const tog = document.getElementById('togEtiquetas');
-  if (z < 13) { map.removeLayer(etiquetasLayer); }
+  if (z < 11) { map.removeLayer(etiquetasLayer); }
   else if (tog.checked) { etiquetasLayer.addTo(map); }
 });
 
