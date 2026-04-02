@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unidades Médicas CDMX — Delegación Bienestar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="unidades.js"></script>
+<style>
+:root {
+  --guinda:      #9b2247;
+  --guinda-dark: #611232;
+  --verde:       #1e5b4f;
+  --verde-dark:  #002f2a;
+  --dorado:      #a57f2c;
+  --dorado-light:#e6d194;
+  --negro:       #161a1d;
+  --gris:        #98989A;
+  --gris-light:  #f5f5f5;
+  --blanco:      #ffffff;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+header {
+  height: 64px; background: var(--guinda-dark);
+  display: flex; align-items: center; padding: 0 20px; gap: 14px;
+  flex-shrink: 0; border-bottom: 3px solid var(--dorado); z-index: 1000;
+}
+.header-logo {
+  height: 42px; width: 42px; background: var(--blanco); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
+}
+.header-text h1 { font-size: 13px; font-weight: 700; color: var(--blanco); text-transform: uppercase; letter-spacing: .5px; }
+.header-text p  { font-size: 11px; color: var(--dorado-light); font-weight: 300; }
+.counter-badge  { margin-left: auto; background: var(--guinda); border: 1px solid var(--dorado); color: var(--blanco); padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+.app-body { display: flex; flex: 1; overflow: hidden; }
+
+aside {
+  width: 320px; background: var(--blanco); display: flex; flex-direction: column;
+  flex-shrink: 0; border-right: 1px solid #ddd; overflow: hidden; z-index: 500;
+}
+.sidebar-header { background: var(--verde-dark); padding: 12px 16px; color: var(--blanco); }
+.sidebar-header h2 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--dorado-light); margin-bottom: 2px; }
+.sidebar-header p  { font-size: 11px; color: rgba(255,255,255,.55); }
+
+.filters { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #eee; }
+.filter-group label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--gris); margin-bottom: 4px; }
+.filter-group select, .filter-group input {
+  width: 100%; padding: 7px 10px; border: 1px solid #ddd; border-radius: 6px;
+  font-family: 'Noto Sans', sans-serif; font-size: 12px; color: var(--negro);
+  background: var(--gris-light); cursor: pointer;
+}
+.filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--guinda); background: var(--blanco); }
+.btn-clear { width: 100%; padding: 8px; background: transparent; border: 1px solid var(--guinda); color: var(--guinda); border-radius: 6px; font-family: 'Noto Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; }
+.btn-clear:hover { background: var(--guinda); color: var(--blanco); }
+
+.layer-toggles { padding: 10px 16px; border-bottom: 1px solid #eee; display: flex; flex-direction: column; gap: 6px; }
+.layer-toggle { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--negro); cursor: pointer; }
+.layer-toggle input { accent-color: var(--guinda); cursor: pointer; }
+
+.results-header { padding: 8px 16px; background: var(--gris-light); border-bottom: 1px solid #eee; font-size: 10px; color: var(--gris); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.results-list { flex: 1; overflow-y: auto; }
+.result-item { padding: 11px 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background .15s; }
+.result-item:hover { background: #fff5f7; }
+.result-item.active { background: #fce8ed; border-left: 3px solid var(--guinda); }
+.result-name { font-size: 12px; font-weight: 600; color: var(--negro); line-height: 1.3; margin-bottom: 4px; }
+.result-meta { display: flex; gap: 5px; flex-wrap: wrap; }
+.tag { padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+.tag-n1 { background: #e8f5e9; color: #2e7d32; }
+.tag-n2 { background: #fff3e0; color: #e65100; }
+.tag-n3 { background: #fce4ec; color: #880e4f; }
+.tag-mun { background: #e3f2fd; color: #1565c0; }
+
+.results-list::-webkit-scrollbar { width: 4px; }
+.results-list::-webkit-scrollbar-thumb { background: var(--guinda); border-radius: 4px; }
+
+#map { flex: 1; }
+
+.popup-card { min-width: 240px; }
+.popup-head { background: var(--guinda-dark); color: var(--blanco); padding: 10px 12px; margin: -10px -12px 10px -12px; border-radius: 4px 4px 0 0; }
+.popup-head h3 { font-size: 12px; font-weight: 700; line-height: 1.3; }
+.popup-head small { font-size: 10px; color: var(--dorado-light); }
+.popup-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: 11px; align-items: flex-start; }
+.popup-row .ic { flex-shrink: 0; }
+.popup-row b { color: var(--negro); }
+.popup-row span { color: #555; }
+.popup-tag { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+
+.legend { position: absolute; bottom: 28px; right: 12px; background: var(--blanco); border-radius: 8px; padding: 12px 14px; box-shadow: 0 2px 12px rgba(0,0,0,.15); z-index: 999; border-top: 3px solid var(--guinda); }
+.legend h4 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--gris); margin-bottom: 8px; }
+.leg-item { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; font-size: 11px; color: var(--negro); }
+.leg-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">🏥</div>
+  <div class="header-text">
+    <h1>Delegación de los Programas para el Bienestar</h1>
+    <p>Ciudad de México — Unidades Médicas</p>
+  </div>
+  <span class="counter-badge" id="counter">499 unidades</span>
+</header>
+
+<div class="app-body">
+  <aside>
+    <div class="sidebar-header">
+      <h2>Filtros de búsqueda</h2>
+      <p>Filtra por alcaldía, nivel o institución</p>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label>🔍 Buscar unidad</label>
+        <input type="text" id="busqueda" placeholder="Nombre, CLUES...">
+      </div>
+      <div class="filter-group">
+        <label>🏙️ Alcaldía</label>
+        <select id="filtroMunicipio"><option value="">Todas las alcaldías</option></select>
+      </div>
+      <div class="filter-group">
+        <label>🏥 Nivel de atención</label>
+        <select id="filtroNivel">
+          <option value="">Todos los niveles</option>
+          <option value="PRIMER NIVEL">Primer Nivel</option>
+          <option value="SEGUNDO NIVEL">Segundo Nivel</option>
+          <option value="TERCER NIVEL">Tercer Nivel</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>🏛️ Institución</label>
+        <select id="filtroInstitucion"><option value="">Todas las instituciones</option></select>
+      </div>
+      <button class="btn-clear" onclick="limpiarFiltros()">✕ Limpiar filtros</button>
+    </div>
+
+    <div class="layer-toggles">
+      <label class="layer-toggle"><input type="checkbox" id="togZonas" checked> Zonas de trabajo (WMS)</label>
+      <label class="layer-toggle"><input type="checkbox" id="togAlcaldias" checked> Límites de alcaldías (WMS)</label>
+    </div>
+
+    <div class="results-header" id="resHeader">499 resultados</div>
+    <div class="results-list" id="resList"></div>
+  </aside>
+
+  <div id="map"></div>
+</div>
+
+<div class="legend">
+  <h4>Nivel de atención</h4>
+  <div class="leg-item"><div class="leg-dot" style="background:#2e7d32"></div>Primer Nivel</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#e65100"></div>Segundo Nivel</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#880e4f"></div>Tercer Nivel</div>
+</div>
+
+<script>
+const COLORES = { 'PRIMER NIVEL':'#2e7d32', 'SEGUNDO NIVEL':'#e65100', 'TERCER NIVEL':'#880e4f' };
+
+const map = L.map('map', { center:[19.42,-99.13], zoom:11 });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap', maxZoom:19 }).addTo(map);
+
+const WMS = 'https://wms.qgiscloud.com/luissalgado/ZONAS_DE_TRABAJO/';
+const wmsZonas     = L.tileLayer.wms(WMS, { layers:'SECCION',   format:'image/png', transparent:true, opacity:0.4 });
+const wmsAlcaldias = L.tileLayer.wms(WMS, { layers:'MUNICIPIO', format:'image/png', transparent:true, opacity:0.55 });
+wmsZonas.addTo(map); wmsAlcaldias.addTo(map);
+
+document.getElementById('togZonas').addEventListener('change',     e => e.target.checked ? wmsZonas.addTo(map)     : map.removeLayer(wmsZonas));
+document.getElementById('togAlcaldias').addEventListener('change', e => e.target.checked ? wmsAlcaldias.addTo(map) : map.removeLayer(wmsAlcaldias));
+
+function icono(nivel) {
+  const c = COLORES[nivel] || '#555';
+  return L.divIcon({
+    html:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="28" viewBox="0 0 22 28"><ellipse cx="11" cy="26" rx="5" ry="2" fill="rgba(0,0,0,.2)"/><circle cx="11" cy="11" r="10" fill="${c}" stroke="#fff" stroke-width="2"/><text x="11" y="15.5" text-anchor="middle" font-size="13" fill="#fff" font-family="sans-serif" font-weight="bold">+</text></svg>`,
+    className:'', iconSize:[22,28], iconAnchor:[11,28], popupAnchor:[0,-28]
+  });
+}
+
+const cluster = L.markerClusterGroup({
+  maxClusterRadius: 45,
+  iconCreateFunction: c => L.divIcon({
+    html:`<div style="background:#9b2247;color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)">${c.getChildCount()}</div>`,
+    className:'', iconSize:[36,36]
+  })
+});
+map.addLayer(cluster);
+
+const marcadores = [];
+let activeItem = null;
+
+function tagNivel(n) {
+  const cls = n==='PRIMER NIVEL'?'n1':n==='SEGUNDO NIVEL'?'n2':'n3';
+  const label = n==='PRIMER NIVEL'?'1er Nivel':n==='SEGUNDO NIVEL'?'2do Nivel':'3er Nivel';
+  return `<span class="tag tag-${cls}">${label}</span>`;
+}
+
+UNIDADES.forEach((u, i) => {
+  const m = L.marker([u.lat, u.lon], { icon: icono(u.nivel) });
+  const bgTag = u.nivel==='PRIMER NIVEL'?'#e8f5e9':u.nivel==='SEGUNDO NIVEL'?'#fff3e0':'#fce4ec';
+  const cTag  = COLORES[u.nivel]||'#333';
+  m.bindPopup(`
+    <div class="popup-card">
+      <div class="popup-head"><h3>${u.nombre}</h3><small>${u.clues}</small></div>
+      <div class="popup-row"><span class="ic">🏛️</span><div><b>Institución</b><br><span>${u.institucion}</span></div></div>
+      <div class="popup-row"><span class="ic">🏙️</span><div><b>Alcaldía</b><br><span>${u.municipio}</span></div></div>
+      <div class="popup-row"><span class="ic">📍</span><div><b>Dirección</b><br><span>${u.vialidad} ${u.num_ext}, ${u.colonia}</span></div></div>
+      ${u.telefono?`<div class="popup-row"><span class="ic">📞</span><div><b>Teléfono</b><br><span>${u.telefono}</span></div></div>`:''}
+      <div class="popup-row"><span class="ic">🔬</span><div><b>Tipología</b><br><span>${u.tipologia}</span></div></div>
+      <span class="popup-tag" style="background:${bgTag};color:${cTag}">${u.nivel}</span>
+    </div>`, { maxWidth:300 });
+  marcadores.push(m);
+  cluster.addLayer(m);
+});
+
+// Poblar selects
+const selMun  = document.getElementById('filtroMunicipio');
+const selNiv  = document.getElementById('filtroNivel');
+const selInst = document.getElementById('filtroInstitucion');
+const inBus   = document.getElementById('busqueda');
+
+[...new Set(UNIDADES.map(u=>u.municipio))].sort().forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; selMun.appendChild(o); });
+[...new Set(UNIDADES.map(u=>u.institucion))].sort().forEach(v => { const label=v.length>42?v.slice(0,42)+'…':v; const o=document.createElement('option'); o.value=v; o.textContent=label; selInst.appendChild(o); });
+
+function aplicar() {
+  const mun=selMun.value, niv=selNiv.value, inst=selInst.value, bus=inBus.value.toLowerCase().trim();
+  cluster.clearLayers();
+  const lista = document.getElementById('resList');
+  lista.innerHTML = '';
+  let n = 0;
+
+  UNIDADES.forEach((u, i) => {
+    const ok = (!mun||u.municipio===mun) && (!niv||u.nivel===niv) && (!inst||u.institucion===inst) &&
+               (!bus||u.nombre.toLowerCase().includes(bus)||u.clues.toLowerCase().includes(bus));
+    if (!ok) return;
+    cluster.addLayer(marcadores[i]);
+    n++;
+    const div = document.createElement('div');
+    div.className = 'result-item';
+    div.innerHTML = `<div class="result-name">${u.nombre}</div><div class="result-meta"><span class="tag tag-mun">${u.municipio}</span>${tagNivel(u.nivel)}</div>`;
+    div.addEventListener('click', () => {
+      if(activeItem) activeItem.classList.remove('active');
+      div.classList.add('active'); activeItem = div;
+      map.setView([u.lat, u.lon], 15);
+      marcadores[i].openPopup();
+    });
+    lista.appendChild(div);
+  });
+
+  document.getElementById('counter').textContent = `${n} unidades`;
+  document.getElementById('resHeader').textContent = `${n} resultados`;
+}
+
+function limpiarFiltros() { selMun.value=''; selNiv.value=''; selInst.value=''; inBus.value=''; aplicar(); }
+[selMun, selNiv, selInst].forEach(el => el.addEventListener('change', aplicar));
+inBus.addEventListener('input', aplicar);
+aplicar();
+</script>
+</body>
+</html>
