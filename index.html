@@ -39,7 +39,7 @@ header {
 }
 .header-text h1 { font-size: 13px; font-weight: 700; color: var(--blanco); text-transform: uppercase; letter-spacing: .5px; }
 .header-text p  { font-size: 11px; color: var(--dorado-light); font-weight: 300; }
-.counter-badge  { margin-left: auto; background: var(--guinda); border: 1px solid var(--dorado); color: var(--blanco); padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.counter-badge  { margin-left: auto; background: var(--guinda); border: 1px solid var(--dorado); color: var(--blanco); padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
 
 .app-body { display: flex; flex: 1; overflow: hidden; }
 
@@ -98,6 +98,21 @@ aside {
 .legend h4 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--gris); margin-bottom: 8px; }
 .leg-item { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; font-size: 11px; color: var(--negro); }
 .leg-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.leg-rect { width: 18px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* Tooltip de zona */
+.leaflet-tooltip-zona {
+  background: rgba(97,18,50,0.85);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 10px;
+  font-family: 'Noto Sans', sans-serif;
+  font-weight: 600;
+  padding: 3px 7px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.3);
+}
+.leaflet-tooltip-zona::before { display: none; }
 </style>
 </head>
 <body>
@@ -144,8 +159,8 @@ aside {
     </div>
 
     <div class="layer-toggles">
-      <label class="layer-toggle"><input type="checkbox" id="togZonas" checked> Zonas de trabajo (WMS)</label>
-      <label class="layer-toggle"><input type="checkbox" id="togAlcaldias" checked> Límites de alcaldías (WMS)</label>
+      <label class="layer-toggle"><input type="checkbox" id="togZonas" checked> Zonas de trabajo</label>
+      <label class="layer-toggle"><input type="checkbox" id="togEtiquetas" checked> Etiquetas de zonas</label>
     </div>
 
     <div class="results-header" id="resHeader">499 resultados</div>
@@ -160,30 +175,119 @@ aside {
   <div class="leg-item"><div class="leg-dot" style="background:#2e7d32"></div>Primer Nivel</div>
   <div class="leg-item"><div class="leg-dot" style="background:#e65100"></div>Segundo Nivel</div>
   <div class="leg-item"><div class="leg-dot" style="background:#880e4f"></div>Tercer Nivel</div>
+  <hr style="border:none;border-top:1px solid #eee;margin:8px 0">
+  <div class="leg-item"><div class="leg-rect" style="background:rgba(155,34,71,0.15);border:1px solid #9b2247"></div>Zonas de trabajo</div>
 </div>
 
 <script>
 const COLORES = { 'PRIMER NIVEL':'#2e7d32', 'SEGUNDO NIVEL':'#e65100', 'TERCER NIVEL':'#880e4f' };
 
+// ── MAPA ──────────────────────────────────────────────────────────────────
 const map = L.map('map', { center:[19.42,-99.13], zoom:11 });
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap', maxZoom:19 }).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution:'© OpenStreetMap contributors', maxZoom:19
+}).addTo(map);
 
-const WMS = 'https://wms.qgiscloud.com/luissalgado/ZONAS_DE_TRABAJO/';
-const wmsZonas     = L.tileLayer.wms(WMS, { layers:'SECCION',   format:'image/png', transparent:true, opacity:0.4 });
-const wmsAlcaldias = L.tileLayer.wms(WMS, { layers:'MUNICIPIO', format:'image/png', transparent:true, opacity:0.55 });
-wmsZonas.addTo(map); wmsAlcaldias.addTo(map);
+// ── CAPA ZONAS GEOJSON ────────────────────────────────────────────────────
+let zonasLayer = null;
+let etiquetasLayer = L.layerGroup().addTo(map);
+let mostrarEtiquetas = true;
 
-document.getElementById('togZonas').addEventListener('change',     e => e.target.checked ? wmsZonas.addTo(map)     : map.removeLayer(wmsZonas));
-document.getElementById('togAlcaldias').addEventListener('change', e => e.target.checked ? wmsAlcaldias.addTo(map) : map.removeLayer(wmsAlcaldias));
+function getZonaColor(zona) {
+  // Colores por alcaldía basados en el nombre de zona
+  const nombre = (zona || '').toUpperCase();
+  if (nombre.includes('ALVARO') || nombre.includes('OBREGON'))   return '#1565c0';
+  if (nombre.includes('AZCAPOTZALCO'))                           return '#6a1b9a';
+  if (nombre.includes('BENITO'))                                 return '#ad1457';
+  if (nombre.includes('COYOACAN'))                               return '#00838f';
+  if (nombre.includes('CUAJIMALPA'))                             return '#2e7d32';
+  if (nombre.includes('CUAUHTEMOC'))                             return '#e65100';
+  if (nombre.includes('GUSTAVO'))                                return '#4527a0';
+  if (nombre.includes('IZTACALCO'))                              return '#558b2f';
+  if (nombre.includes('IZTAPALAPA'))                             return '#ef6c00';
+  if (nombre.includes('MAGDALENA'))                              return '#00695c';
+  if (nombre.includes('MIGUEL'))                                 return '#1976d2';
+  if (nombre.includes('MILPA'))                                  return '#5d4037';
+  if (nombre.includes('TLAHUAC'))                                return '#0277bd';
+  if (nombre.includes('TLALPAN'))                                return '#283593';
+  if (nombre.includes('VENUSTIANO'))                             return '#c62828';
+  if (nombre.includes('XOCHIMILCO'))                             return '#37474f';
+  return '#9b2247';
+}
 
+fetch('zonas.geojson')
+  .then(r => r.json())
+  .then(data => {
+    zonasLayer = L.geoJSON(data, {
+      style: feat => {
+        const nombre = feat.properties['nombre de zona trabajo'] || '';
+        return {
+          fillColor: getZonaColor(nombre),
+          fillOpacity: 0.12,
+          color: getZonaColor(nombre),
+          weight: 1.2,
+          opacity: 0.6
+        };
+      },
+      onEachFeature: (feat, layer) => {
+        const zona  = feat.properties['nombre de zona trabajo'] || '';
+        const secc  = feat.properties['seccion'] || '';
+        layer.bindPopup(`<b>Zona:</b> ${zona}<br><b>Sección:</b> ${secc}`, { maxWidth:200 });
+        layer.on('mouseover', () => layer.setStyle({ fillOpacity:0.3, weight:2 }));
+        layer.on('mouseout',  () => zonasLayer.resetStyle(layer));
+      }
+    }).addTo(map);
+
+    // Etiquetas de zona
+    data.features.forEach(feat => {
+      try {
+        const coords = feat.geometry.type === 'MultiPolygon'
+          ? feat.geometry.coordinates[0][0]
+          : feat.geometry.coordinates[0];
+        const lats = coords.map(c=>c[1]), lons = coords.map(c=>c[0]);
+        const lat = lats.reduce((a,b)=>a+b)/lats.length;
+        const lon = lons.reduce((a,b)=>a+b)/lons.length;
+        const nombre = feat.properties['nombre de zona trabajo'] || '';
+        const short = nombre.split('-').slice(-1)[0] || nombre;
+        L.tooltip({ permanent:true, direction:'center', className:'leaflet-tooltip-zona' })
+          .setContent(short)
+          .setLatLng([lat, lon])
+          .addTo(etiquetasLayer);
+      } catch(e) {}
+    });
+  })
+  .catch(e => console.warn('No se pudo cargar zonas.geojson:', e));
+
+document.getElementById('togZonas').addEventListener('change', e => {
+  if (e.target.checked) { if(zonasLayer) zonasLayer.addTo(map); }
+  else { if(zonasLayer) map.removeLayer(zonasLayer); }
+});
+document.getElementById('togEtiquetas').addEventListener('change', e => {
+  e.target.checked ? etiquetasLayer.addTo(map) : map.removeLayer(etiquetasLayer);
+});
+
+// Ocultar etiquetas en zoom bajo
+map.on('zoomend', () => {
+  const z = map.getZoom();
+  const tog = document.getElementById('togEtiquetas');
+  if (z < 13) { map.removeLayer(etiquetasLayer); }
+  else if (tog.checked) { etiquetasLayer.addTo(map); }
+});
+
+// ── ICONOS ────────────────────────────────────────────────────────────────
 function icono(nivel) {
   const c = COLORES[nivel] || '#555';
   return L.divIcon({
-    html:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="28" viewBox="0 0 22 28"><ellipse cx="11" cy="26" rx="5" ry="2" fill="rgba(0,0,0,.2)"/><circle cx="11" cy="11" r="10" fill="${c}" stroke="#fff" stroke-width="2"/><text x="11" y="15.5" text-anchor="middle" font-size="13" fill="#fff" font-family="sans-serif" font-weight="bold">+</text></svg>`,
+    html:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="28" viewBox="0 0 22 28">
+      <ellipse cx="11" cy="26" rx="5" ry="2" fill="rgba(0,0,0,.2)"/>
+      <circle cx="11" cy="11" r="10" fill="${c}" stroke="#fff" stroke-width="2"/>
+      <text x="11" y="15.5" text-anchor="middle" font-size="13" fill="#fff" font-family="sans-serif" font-weight="bold">+</text>
+    </svg>`,
     className:'', iconSize:[22,28], iconAnchor:[11,28], popupAnchor:[0,-28]
   });
 }
 
+// ── CLUSTER ───────────────────────────────────────────────────────────────
 const cluster = L.markerClusterGroup({
   maxClusterRadius: 45,
   iconCreateFunction: c => L.divIcon({
@@ -193,6 +297,7 @@ const cluster = L.markerClusterGroup({
 });
 map.addLayer(cluster);
 
+// ── MARCADORES ────────────────────────────────────────────────────────────
 const marcadores = [];
 let activeItem = null;
 
@@ -220,14 +325,19 @@ UNIDADES.forEach((u, i) => {
   cluster.addLayer(m);
 });
 
-// Poblar selects
+// ── FILTROS ───────────────────────────────────────────────────────────────
 const selMun  = document.getElementById('filtroMunicipio');
 const selNiv  = document.getElementById('filtroNivel');
 const selInst = document.getElementById('filtroInstitucion');
 const inBus   = document.getElementById('busqueda');
 
-[...new Set(UNIDADES.map(u=>u.municipio))].sort().forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; selMun.appendChild(o); });
-[...new Set(UNIDADES.map(u=>u.institucion))].sort().forEach(v => { const label=v.length>42?v.slice(0,42)+'…':v; const o=document.createElement('option'); o.value=v; o.textContent=label; selInst.appendChild(o); });
+[...new Set(UNIDADES.map(u=>u.municipio))].sort().forEach(v => {
+  const o=document.createElement('option'); o.value=v; o.textContent=v; selMun.appendChild(o);
+});
+[...new Set(UNIDADES.map(u=>u.institucion))].sort().forEach(v => {
+  const label=v.length>42?v.slice(0,42)+'…':v;
+  const o=document.createElement('option'); o.value=v; o.textContent=label; selInst.appendChild(o);
+});
 
 function aplicar() {
   const mun=selMun.value, niv=selNiv.value, inst=selInst.value, bus=inBus.value.toLowerCase().trim();
@@ -237,14 +347,16 @@ function aplicar() {
   let n = 0;
 
   UNIDADES.forEach((u, i) => {
-    const ok = (!mun||u.municipio===mun) && (!niv||u.nivel===niv) && (!inst||u.institucion===inst) &&
+    const ok = (!mun||u.municipio===mun) && (!niv||u.nivel===niv) &&
+               (!inst||u.institucion===inst) &&
                (!bus||u.nombre.toLowerCase().includes(bus)||u.clues.toLowerCase().includes(bus));
     if (!ok) return;
     cluster.addLayer(marcadores[i]);
     n++;
     const div = document.createElement('div');
     div.className = 'result-item';
-    div.innerHTML = `<div class="result-name">${u.nombre}</div><div class="result-meta"><span class="tag tag-mun">${u.municipio}</span>${tagNivel(u.nivel)}</div>`;
+    div.innerHTML = `<div class="result-name">${u.nombre}</div>
+      <div class="result-meta"><span class="tag tag-mun">${u.municipio}</span>${tagNivel(u.nivel)}</div>`;
     div.addEventListener('click', () => {
       if(activeItem) activeItem.classList.remove('active');
       div.classList.add('active'); activeItem = div;
