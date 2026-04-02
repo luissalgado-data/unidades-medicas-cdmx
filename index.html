@@ -12,6 +12,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="unidades.js"></script>
+<script src="zonas.js"></script>
 <style>
 :root {
   --guinda:      #9b2247;
@@ -212,18 +213,10 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution:'© OpenStreetMap contributors', maxZoom:19
 }).addTo(map);
 
-// ── DATOS GEOJSON (cargado una vez, renderizado bajo demanda) ─────────────
-let geojsonData = null;
+// ── CAPA ZONAS (desde zonas.js) ───────────────────────────────────────────
 let zonasLayer  = null;
 let etiquetasLayer = L.layerGroup().addTo(map);
-
-fetch('zonas.geojson')
-  .then(r => r.json())
-  .then(data => {
-    geojsonData = data;
-    console.log('GeoJSON cargado:', data.features.length, 'zonas');
-  })
-  .catch(e => console.warn('Error cargando zonas.geojson:', e));
+console.log('Zonas cargadas:', ZONAS_DATA.features.length);
 
 function renderizarZonas(alcaldiaFiltro) {
   // Limpiar capas anteriores
@@ -231,10 +224,10 @@ function renderizarZonas(alcaldiaFiltro) {
   etiquetasLayer.clearLayers();
   document.getElementById('leyendaZonas').innerHTML = '';
 
-  if (!geojsonData || !alcaldiaFiltro) return;
+  if (!ZONAS_DATA || !alcaldiaFiltro) return;
 
   // Filtrar features de la alcaldía seleccionada
-  const features = geojsonData.features.filter(f => {
+  const features = ZONAS_DATA.features.filter(f => {
     const alc = f.properties['alcaldia'] || '';
     return alc === alcaldiaFiltro;
   });
